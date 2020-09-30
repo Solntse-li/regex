@@ -1,0 +1,49 @@
+%start Map1::Start
+%class AppClass
+
+%map Map1
+%%
+// State        Transition      End State       Action(s)
+Start
+{
+                nfs(counter : int, c : char)[counter == 0 and c == "n"]               nil     {IncCounter();}
+		nfs(counter : int, c : char)[counter == 1 and c == "f"]               nil     {IncCounter();}
+		nfs(counter : int, c : char)[counter == 2 and c == "s"]               nil     {IncCounter();}
+		nfs(counter : int, c : char)[counter == 3 and c == ":"]               nil     {IncCounter();}
+		nfs(counter : int, c : char)[counter == 4 and c == "/"]               nil     {IncCounter();}
+		nfs(counter : int, c : char)[counter == 5 and c == "/"]               Server     {ResetCounter();}
+}
+
+
+Server
+{
+                CheckChar(counter : int, c : char) [(c >= "a" and c <="z") or (c >= "A" and c<="Z") ]	nil     {IncCounter();}
+		CheckChar(counter : int, c : char) [counter > 0 and c == "/"]	Dir	{ResetCounter();}
+}
+
+
+Dir
+{
+		CheckChar(counter : int, c : char) [(c >= "a" and c <="z") or (c >= "A" and c<="Z") ]	nil     {IncCounter();}
+		CheckChar(counter : int, c : char) [counter > 0 and c == "/"]	nil	{ResetCounter();}
+		EOS(counter : int) [counter > 0]	Valid	{Valid();}
+}
+
+Valid
+{
+
+}
+
+Invalid
+{
+                
+}
+
+Default
+{
+		nfs(counter : int, c : char)		Invalid	{Invalid();}
+                CheckChar(c : char, counter : int)	Invalid	{Invalid();}
+		EOS(counter : int)	         	Invalid	{Invalid();}
+}
+
+%%
